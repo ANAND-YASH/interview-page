@@ -8,7 +8,7 @@ const InterviewerForm = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    registrationNumber: "", 
+    registrationNumber: "",
     emailid: "",
     college: "",
     role: "",
@@ -21,10 +21,6 @@ const InterviewerForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.name || !formData.registrationNumber || !formData.emailid || !formData.college || !formData.role || !formData.experience) {
-      alert("Please fill in all fields.");
-      return;
-    }
     localStorage.setItem("interviewerData", JSON.stringify(formData));
     router.push("/ai-interview");
   };
@@ -41,15 +37,17 @@ const InterviewerForm = () => {
             placeholder="Your Name"
             value={formData.name}
             onChange={handleChange}
+            required
             className="w-full p-2 border border-gray-300 rounded"
           />
 
           <input
-            type="text"
+            type="email"
             name="emailid"
             placeholder="Your Email"
             value={formData.emailid}
             onChange={handleChange}
+            required
             className="w-full p-2 border border-gray-300 rounded"
           />
 
@@ -59,15 +57,16 @@ const InterviewerForm = () => {
             placeholder="Registration Number"
             value={formData.registrationNumber}
             onChange={handleChange}
+            required
             className="w-full p-2 border border-gray-300 rounded"
           />
 
-          
           <select
             name="college"
             value={formData.college}
             onChange={handleChange}
-            className="w-full p-2 border border-gray-300 rounded"
+            required
+            className="w-full p-2 border border-white-300 rounded"
           >
             <option value="">Select College</option>
             <option value="SOA UNIVERSITY">SOA UNIVERSITY</option>
@@ -88,8 +87,10 @@ const InterviewerForm = () => {
             name="role"
             value={formData.role}
             onChange={handleChange}
+            required
             className="w-full p-2 border border-gray-300 rounded"
           >
+            
             <option value="">Select Role</option>
             <option value="Software Developer">Software Developer</option>
             <option value="Web Developer">Web Developer</option>
@@ -107,6 +108,7 @@ const InterviewerForm = () => {
             name="experience"
             value={formData.experience}
             onChange={handleChange}
+            required
             className="w-full p-2 border border-gray-300 rounded"
           >
             <option value="">Select Experience</option>
@@ -119,7 +121,7 @@ const InterviewerForm = () => {
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
           >
-            Start  Interview
+            Start Interview
           </button>
         </form>
       </div>
