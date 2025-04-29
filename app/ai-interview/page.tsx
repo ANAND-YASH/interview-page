@@ -46,9 +46,10 @@ const AIInterview = () => {
   const [questions, setQuestions] = useState<string[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answer, setAnswer] = useState("");
+  const [answers, setAnswers] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(180); // Timer set for total questions
+  const [timeLeft, setTimeLeft] = useState(180);
   const [examEnded, setExamEnded] = useState(false);
 
   useEffect(() => {
@@ -56,7 +57,9 @@ const AIInterview = () => {
     if (data) {
       const parsedData = JSON.parse(data);
       setInterviewer(parsedData);
-      setQuestions(roleBasedQuestions[parsedData.role] || ["Tell me about yourself."]);
+      const qList = roleBasedQuestions[parsedData.role] || ["Tell me about yourself."];
+      setQuestions(qList);
+      setAnswers(new Array(qList.length).fill(""));
     }
   }, []);
 
@@ -66,13 +69,12 @@ const AIInterview = () => {
         if (prev <= 1) {
           clearInterval(timer);
           setExamEnded(true);
-          alert("Time is up! Your interview has been ended.");
+          alert("Time is up! Your interview has ended.");
           return 0;
         }
         return prev - 1;
       });
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
@@ -107,7 +109,6 @@ const AIInterview = () => {
         question: questions[currentQuestionIndex],
         answer,
       });
-
       setFeedback(response.data.feedback);
     } catch (error) {
       console.error("Evaluation error:", error);
@@ -118,11 +119,23 @@ const AIInterview = () => {
   };
 
   const handleNextQuestion = () => {
+    if (!answer.trim()) {
+      alert("Please write your answer before proceeding.");
+      return;
+    }
+
+    const updatedAnswers = [...answers];
+    updatedAnswers[currentQuestionIndex] = answer;
+    setAnswers(updatedAnswers);
+
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
-      setAnswer("");
+      setAnswer(updatedAnswers[currentQuestionIndex + 1] || "");
       setFeedback(null);
     } else {
+      console.log("Final Answers Submitted:", updatedAnswers);
+      localStorage.setItem("finalAnswers", JSON.stringify(updatedAnswers));
+      localStorage.setItem("finalQuestions", JSON.stringify(questions));
       router.push("/interview-completed");
     }
   };
