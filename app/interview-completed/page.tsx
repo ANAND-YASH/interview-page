@@ -6,6 +6,8 @@ import confetti from "canvas-confetti";
 export default function InterviewCompleted() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(5);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [questions, setQuestions] = useState<string[]>([]);
 
   useEffect(() => {
     // 🎉 Fire confetti on page load
@@ -14,16 +16,25 @@ export default function InterviewCompleted() {
       spread: 70,
       origin: { y: 0.6 },
     });
+    const savedAnswers = localStorage.getItem("finalAnswers");
+    const savedQuestions = localStorage.getItem("finalQuestions");
+    if (savedAnswers && savedQuestions) {
+      setAnswers(JSON.parse(savedAnswers));
+      setQuestions(JSON.parse(savedQuestions));
+    }
 
     const interval = setInterval(() => {
       setCountdown((prev) => prev - 1);
     }, 1000);
 
-    setTimeout(() => {
+    const timeout = setTimeout(() => {
       router.push("/");
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timeout);
+    };
   }, [router]);
 
   return (
@@ -41,6 +52,14 @@ export default function InterviewCompleted() {
         >
           Go to Home Now
         </button>
+      </div>
+      <div className="w-full max-w-2xl mt-6 space-y-4">
+        {questions.map((q, idx) => (
+          <div key={idx} className="p-4 bg-gray-800 rounded shadow">
+            <p className="font-bold text-yellow-400">Q{idx + 1}: {q}</p>
+            <p className="mt-2 text-white">📝 {answers[idx] || "No answer provided."}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
